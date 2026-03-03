@@ -26,12 +26,13 @@ namespace URL_Shortener.Services
             };
 
             var securityKey = _configuration["JwtSettings:SecurityKey"];
-            if(securityKey.IsNullOrEmpty())
+            if (securityKey.IsNullOrEmpty())
             {
                 ArgumentNullException exception = new ArgumentNullException
                     ("Secret security key is not found in configuration");
                 throw exception;
             }
+
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securityKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
