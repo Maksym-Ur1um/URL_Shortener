@@ -52,12 +52,22 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 
 builder.Services.AddControllers();
+builder.Services.AddRazorPages();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
 
 var app = builder.Build();
+
+app.UseCors(policy =>
+{
+    policy
+    .AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyHeader();
+});
+
 
 if (app.Environment.IsDevelopment())
 {
@@ -71,5 +81,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapRazorPages();
 
 app.Run();

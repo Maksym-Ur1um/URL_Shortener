@@ -1,0 +1,20 @@
+﻿@page
+@model URL_Shortener.Pages.AboutModel
+@{
+}
+
+<h1>About Algorithm</h1>
+
+@if (User.IsInRole("Admin"))
+{
+    <form method="post">
+        <input type="hidden" asp-for="AboutContent.Id" />
+        <input type="hidden" asp-for="AboutContent.PageName" />
+        <textarea asp-for="AboutContent.TextContent"></textarea>
+        <button type="submit">Save</button>
+    </form>
+}
+else
+{
+    <p>@Model.AboutContent.TextContent</p>
+}
