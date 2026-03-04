@@ -3,11 +3,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using URL_Shortener.Data;
+using URL_Shortener.Repository;
 using URL_Shortener.Services;
 using URL_Shortener.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
+
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IUrlRepository, UrlRepository>();
+builder.Services.AddScoped<IUrlShortenerService,  UrlShortenerService>();
 
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
