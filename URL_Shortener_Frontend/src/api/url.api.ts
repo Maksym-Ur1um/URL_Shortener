@@ -6,12 +6,16 @@ export const getAllUrls = async function(): Promise<IUrlTableItem[]> {
     return response.data;
 }
 
-export const getUrlInfo = async function(urlId: number): Promise<IUrlDetails> {
-    const response = await apiClient.get<IUrlDetails>(`/url/info/${urlId}`);
+export const getUrlInfo = async function(id: number): Promise<IUrlDetails> {
+    const response = await apiClient.get<IUrlDetails>(`/url/info/${id}`);
     return response.data;
 }
 
 export const createUrl = async function(data: ICreateUrlRequest): Promise<IUrlResponse> {
-    const response = await apiClient.post<IUrlResponse>('url', data);
+    const response = await apiClient.post<IUrlResponse>('/url', data);
     return response.data;
+}
+
+export const deleteUrl = async function(id: number): Promise<void> {
+    await apiClient.delete<void>(`/url/${id}`);
 }

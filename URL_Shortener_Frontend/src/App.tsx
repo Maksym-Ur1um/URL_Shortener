@@ -1,12 +1,22 @@
-
+import {Routes, Route} from "react-router-dom"
+import LoginPage from "./pages/LoginPage"
+import UrlInfoPage from "./pages/UrlInfoPage"
+import UrlTablePage from "./pages/UrlTablePage"
+import ProtectedRoute from "./components/ProtectedRoute"
 
 function App() {
   return (
-    <>
-      <div className='container'>
-        <h1>Url Shortener</h1>
-      </div>
-    </>
+    <div>
+        <Routes>
+          <Route path="/login" element = {<LoginPage />}/>
+          <Route path="/url/table" element = {<UrlTablePage />}/>
+          <Route path="/url/info/:id" element = {
+            <ProtectedRoute>
+              <UrlInfoPage />
+            </ProtectedRoute>
+          }/>
+        </Routes>
+    </div>
   )
 }
 
