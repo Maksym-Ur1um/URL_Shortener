@@ -1,7 +1,8 @@
 export interface IUser {
     userName: string,
     role: string,
-    token: string
+    token: string,
+    userId: number
 }
 
 export interface ILoginRequest {
