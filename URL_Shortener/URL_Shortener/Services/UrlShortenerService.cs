@@ -2,9 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using System.Text;
 using URL_Shortener.Data;
+using URL_Shortener.Data.Repository;
 using URL_Shortener.DTOs;
 using URL_Shortener.Models;
-using URL_Shortener.Repository;
 using URL_Shortener.Services.Interfaces;
 
 namespace URL_Shortener.Services

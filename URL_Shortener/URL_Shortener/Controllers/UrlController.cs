@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using URL_Shortener.Data.Repository;
 using URL_Shortener.DTOs;
-using URL_Shortener.Repository;
 using URL_Shortener.Services.Interfaces;
 
 namespace URL_Shortener.Controllers

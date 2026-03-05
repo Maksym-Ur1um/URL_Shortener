@@ -41,14 +41,6 @@ namespace URL_Shortener.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PageContents");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            PageName = "About",
-                            TextContent = "Our application uses a highly efficient mathematical approach called Base62 Encoding. When you submit a long URL, the system first securely saves it into our database and assigns it a unique numeric ID. We then take this standard base-10 numeric ID and convert it into a Base62 string. The Base62 alphabet consists of 62 characters: lowercase letters (a-z), uppercase letters (A-Z), and digits (0-9). This conversion guarantees that every generated short link is absolutely unique, collision-free, and as short as mathematically possible."
-                        });
                 });
 
             modelBuilder.Entity("URL_Shortener.Models.ShortenedUrl", b =>
@@ -64,7 +56,8 @@ namespace URL_Shortener.Migrations
 
                     b.Property<string>("OriginalUrl")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
 
                     b.Property<string>("ShortUrl")
                         .IsRequired()
@@ -108,22 +101,6 @@ namespace URL_Shortener.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            PasswordHash = "$2a$11$qtEm9WNPMHdEIncqv1ixk.RzjXsWNrlj4aFVR8YHOSMvovOilksfy",
-                            Role = 1,
-                            UserName = "Ivan"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            PasswordHash = "$2a$11$1kz2UdYbg02yM4sLj2l/Be179mbx90kr765RahKV7lmCw56azMtuy",
-                            Role = 0,
-                            UserName = "Admin"
-                        });
                 });
 
             modelBuilder.Entity("URL_Shortener.Models.ShortenedUrl", b =>

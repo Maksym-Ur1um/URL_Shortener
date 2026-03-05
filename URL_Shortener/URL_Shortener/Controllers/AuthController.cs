@@ -32,12 +32,33 @@ namespace URL_Shortener.Controllers
             if(BCrypt.Net.BCrypt.Verify(loginRequestDto.Password,  user.PasswordHash))
             {
                 var token = _tokenService.GenerateJwtToken(user);
+                var cookieOptions = new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.None,
+                    Expires = DateTime.UtcNow.AddHours(1)   
+                };
+                
+                Response.Cookies.Append("jwt", token, cookieOptions);
                 var authResponse = new AuthResponseDto 
-                { UserName = user.UserName, Token = token, Role = user.Role.ToString() };
+                { UserName = user.UserName, Role = user.Role.ToString(), UserId = user.Id };
                 return Ok(authResponse);
             }
 
             return Unauthorized("Wrong Username or Password");
+        }
+        [HttpPost("logout")]
+        public IActionResult Logout()
+        {
+            Response.Cookies.Delete("jwt", new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None
+            });
+
+            return Ok(new { message = "Successfully logged out" });
         }
     }
 }

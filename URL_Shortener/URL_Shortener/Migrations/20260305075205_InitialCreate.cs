@@ -3,8 +3,6 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
-
 namespace URL_Shortener.Migrations
 {
     /// <inheritdoc />
@@ -48,7 +46,7 @@ namespace URL_Shortener.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    OriginalUrl = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    OriginalUrl = table.Column<string>(type: "nvarchar(2048)", maxLength: 2048, nullable: false),
                     ShortUrl = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: true)
@@ -61,20 +59,6 @@ namespace URL_Shortener.Migrations
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id");
-                });
-
-            migrationBuilder.InsertData(
-                table: "PageContents",
-                columns: new[] { "Id", "PageName", "TextContent" },
-                values: new object[] { 1, "About", "Our application uses a highly efficient mathematical approach called Base62 Encoding. When you submit a long URL, the system first securely saves it into our database and assigns it a unique numeric ID. We then take this standard base-10 numeric ID and convert it into a Base62 string. The Base62 alphabet consists of 62 characters: lowercase letters (a-z), uppercase letters (A-Z), and digits (0-9). This conversion guarantees that every generated short link is absolutely unique, collision-free, and as short as mathematically possible." });
-
-            migrationBuilder.InsertData(
-                table: "Users",
-                columns: new[] { "Id", "PasswordHash", "Role", "UserName" },
-                values: new object[,]
-                {
-                    { 1, "$2a$11$qtEm9WNPMHdEIncqv1ixk.RzjXsWNrlj4aFVR8YHOSMvovOilksfy", 1, "Ivan" },
-                    { 2, "$2a$11$1kz2UdYbg02yM4sLj2l/Be179mbx90kr765RahKV7lmCw56azMtuy", 0, "Admin" }
                 });
 
             migrationBuilder.CreateIndex(

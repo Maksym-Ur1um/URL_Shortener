@@ -1,6 +1,6 @@
 ﻿using URL_Shortener.Models;
 
-namespace URL_Shortener.Repository
+namespace URL_Shortener.Data.Repository
 {
     public interface IUrlRepository
     {

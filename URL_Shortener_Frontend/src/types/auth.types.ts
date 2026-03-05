@@ -1,7 +1,6 @@
 export interface IUser {
     userName: string,
     role: string,
-    token: string,
     userId: number
 }
 

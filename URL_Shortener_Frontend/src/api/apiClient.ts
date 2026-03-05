@@ -6,27 +6,18 @@ const BASE_URL = "https://localhost:7076/api";
 
 const apiClient = axios.create({
     baseURL: BASE_URL,
+    withCredentials: true,
     headers: {
         "Content-Type": "application/json;charset=utf-8"
     }
 });
 
-apiClient.interceptors.request.use(function (req) {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-        const user = JSON.parse(storedUser);
-        if (user.token) {
-            req.headers.Authorization = `Bearer ${user.token}`;
-        }
-    }
-    return req;
-});
 
 apiClient.interceptors.response.use(function (res) {
     return res;
 }, function(error) {
     if(error.response) {
-        if(error.response.status === 401 || error.response.status === 403) {
+        if(error.response.status === 401) {
             store.dispatch(logout());
             window.location.href = '/login'
         }

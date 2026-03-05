@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { login } from "../api/auth.api";
+import { loginApi } from "../api/auth.api";
 import { setCredentials } from "../store/authSlice";
 
 export default function LoginPage() {
@@ -16,7 +16,7 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
     try {
-      const response = await login({ userName, password });
+      const response = await loginApi({ userName, password });
       dispatch(setCredentials(response));
       navigate("/");
     } catch {

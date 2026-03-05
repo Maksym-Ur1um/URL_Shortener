@@ -1,8 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using URL_Shortener.Data;
 using URL_Shortener.Models;
 
-namespace URL_Shortener.Repository
+namespace URL_Shortener.Data.Repository
 {
 
     public class UrlRepository : IUrlRepository

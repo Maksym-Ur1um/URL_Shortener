@@ -3,45 +3,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using URL_Shortener.Data;
-using URL_Shortener.Repository;
+using URL_Shortener.Data.Repository;
 using URL_Shortener.Services;
 using URL_Shortener.Services.Interfaces;
+using URL_Shortener.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddScoped<ITokenService, TokenService>();
-builder.Services.AddScoped<IUrlRepository, UrlRepository>();
-builder.Services.AddScoped<IUrlShortenerService,  UrlShortenerService>();
-
-
-var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var securityKey = jwtSettings.GetValue<string>("SecurityKey");
-
-if (securityKey.IsNullOrEmpty())
-{
-    InvalidOperationException exception = new InvalidOperationException
-        ("Secret security key is not found in configuration");
-    throw exception;
-}
-
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = jwtSettings.GetValue<string>("Issuer"),
-        ValidAudience = jwtSettings.GetValue<string>("Audience"),
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securityKey))
-    };
-});
+builder.Services.AddCoreServices().AddAuthServices(builder.Configuration);
 
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -60,12 +29,15 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+await app.SeedDatabaseAsync();
+
 app.UseCors(policy =>
 {
     policy
-    .AllowAnyOrigin()
+    .WithOrigins("http://localhost:5173")
     .AllowAnyMethod()
-    .AllowAnyHeader();
+    .AllowAnyHeader()
+    .AllowCredentials();
 });
 
 
@@ -83,4 +55,4 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapRazorPages();
 
-app.Run();
+await app.RunAsync();
