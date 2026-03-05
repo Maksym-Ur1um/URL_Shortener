@@ -4,13 +4,14 @@ import type { RootState } from "../store/store";
 import { Navigate } from "react-router-dom";
 
 interface ProtectedRouteProps {
-    children: ReactNode
-};
+  children: ReactNode;
+}
 
-export default function ProtectedRoute({children} : ProtectedRouteProps) {
-    const isLogged = useSelector((state : RootState) => state.auth.isAuthenticated);
+export default function ProtectedRoute({ children }: ProtectedRouteProps) {
+  const isLogged = useSelector(
+    (state: RootState) => state.auth.isAuthenticated,
+  );
 
-    if(!isLogged)
-        return <Navigate to="/login" replace />
-    return children;
+  if (!isLogged) return <Navigate to="/login" replace />;
+  return children;
 }

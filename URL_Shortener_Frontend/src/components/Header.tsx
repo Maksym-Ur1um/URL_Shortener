@@ -15,9 +15,9 @@ export default function Header() {
   async function handleLogout() {
     try {
       await logoutApi();
-    } catch(error) {
-      console.error("Logout failed on server", error)
-    }finally {
+    } catch (error) {
+      console.error("Logout failed on server", error);
+    } finally {
       dispatch(logout());
       navigate("/login");
     }
@@ -34,10 +34,12 @@ export default function Header() {
           URL Shortener
         </Link>
         <div className="d-flex ms-auto gap-3">
-          <a 
-            href="https://localhost:7076/about" 
+          <a
+            href="https://localhost:7076/about"
             className="btn btn-outline-light fw-bold px-3 rounded-3 shadow-sm d-flex align-items-center"
-          >About</a>
+          >
+            About
+          </a>
 
           {isLogged ? (
             <button

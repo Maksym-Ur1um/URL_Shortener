@@ -25,7 +25,10 @@ export default function UrlInfoPage() {
 
   return (
     <div className="min-vh-100 d-flex align-items-center justify-content-center pb-5 bg-light">
-      <div className="card shadow-lg rounded-4 border-0 w-100" style={{ maxWidth: "500px" }}>
+      <div
+        className="card shadow-lg rounded-4 border-0 w-100"
+        style={{ maxWidth: "500px" }}
+      >
         <div className="card-body p-5">
           <h2 className="fw-bold text-center mb-4">URL Details</h2>
           {error && (
@@ -40,7 +43,11 @@ export default function UrlInfoPage() {
                   Original Link
                 </label>
                 <div className="text-break">
-                  <a href={urlInfo.originalUrl} target="_blank" rel="noopener noreferrer">
+                  <a
+                    href={urlInfo.originalUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     {urlInfo.originalUrl}
                   </a>
                 </div>
@@ -51,9 +58,9 @@ export default function UrlInfoPage() {
                   Short Link
                 </label>
                 <div>
-                  <a 
-                    href={`https://localhost:7076/api/url/${urlInfo.shortUrl}`} 
-                    target="_blank" 
+                  <a
+                    href={`https://localhost:7076/api/url/${urlInfo.shortUrl}`}
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="fw-bold"
                   >
