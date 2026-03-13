@@ -13,6 +13,8 @@ namespace URL_Shortener.Extensions
         {
             services.AddHttpContextAccessor();
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IUrlRepository, UrlRepository>();
             services.AddScoped<IUrlShortenerService, UrlShortenerService>();
             services.AddScoped<IUrlBuilderService, UrlBuilderService>();

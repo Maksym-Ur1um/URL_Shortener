@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using URL_Shortener.Data;
 using URL_Shortener.DTOs;
 using URL_Shortener.Services.Interfaces;
 
@@ -10,43 +8,32 @@ namespace URL_Shortener.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly AppDbContext _dbContext;
-        private readonly ITokenService _tokenService;
-
-        
-        public AuthController(AppDbContext dbContext, ITokenService tokenService)
+        private readonly IAuthService _authService;
+        public AuthController(IAuthService authService)
         {
-            _dbContext = dbContext;
-            _tokenService = tokenService;
+            _authService = authService;
         }
+
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginRequestDto loginRequestDto)
         {
-            var user = await _dbContext.Users
-                .FirstOrDefaultAsync(u => u.UserName == loginRequestDto.UserName);
+            var result = await _authService.LoginAsync(loginRequestDto.UserName, loginRequestDto.Password);
 
-            if (user == null)
+            if (!result.IsSuccess)
             {
                 return Unauthorized("Wrong Username or Password");
             }
-            if(BCrypt.Net.BCrypt.Verify(loginRequestDto.Password,  user.PasswordHash))
-            {
-                var token = _tokenService.GenerateJwtToken(user);
-                var cookieOptions = new CookieOptions
-                {
-                    HttpOnly = true,
-                    Secure = true,
-                    SameSite = SameSiteMode.None,
-                    Expires = DateTime.UtcNow.AddHours(1)   
-                };
-                
-                Response.Cookies.Append("jwt", token, cookieOptions);
-                var authResponse = new AuthResponseDto 
-                { UserName = user.UserName, Role = user.Role.ToString(), UserId = user.Id };
-                return Ok(authResponse);
-            }
 
-            return Unauthorized("Wrong Username or Password");
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                Expires = DateTime.UtcNow.AddHours(1)
+            };
+            Response.Cookies.Append("jwt", result.Token, cookieOptions);
+
+            return Ok(result.ResponseDto);
         }
         [HttpPost("logout")]
         public IActionResult Logout()
