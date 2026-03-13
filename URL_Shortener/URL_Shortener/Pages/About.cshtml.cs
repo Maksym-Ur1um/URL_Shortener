@@ -8,18 +8,24 @@ namespace URL_Shortener.Pages
 {
     public class AboutModel : PageModel
     {
+        private const int ABOUT_PAGE_ID = 1;
+
         [BindProperty]
         public PageContent AboutContent { get; set; }
+        private readonly IConfiguration _configuration;
 
         private readonly AppDbContext _dbContext;
-        public AboutModel(AppDbContext dbContext)
+        public AboutModel(AppDbContext dbContext, IConfiguration configuration)
         {
             _dbContext = dbContext;
+            _configuration = configuration;
         }
 
         public async Task<IActionResult> OnGetAsync()
         {
-            var entityFromDb = await _dbContext.PageContents.FindAsync(1);
+            ViewData["FrontendUrl"] = _configuration.GetValue<string>("FrontendSettings:BaseUrl");
+
+            var entityFromDb = await _dbContext.PageContents.FindAsync(ABOUT_PAGE_ID);
             
             if(entityFromDb == null)
                 return NotFound();
@@ -35,7 +41,7 @@ namespace URL_Shortener.Pages
             if (!ModelState.IsValid)
                 return Page();
 
-            var entityFromDb = await _dbContext.PageContents.FindAsync(1);
+            var entityFromDb = await _dbContext.PageContents.FindAsync(ABOUT_PAGE_ID);
 
             if (entityFromDb == null)
                 return NotFound();

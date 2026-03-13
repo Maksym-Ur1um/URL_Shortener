@@ -33,8 +33,9 @@ await app.SeedDatabaseAsync();
 
 app.UseCors(policy =>
 {
+    var frontendUrl = builder.Configuration.GetValue<string>("FrontendSettings:BaseUrl");
     policy
-    .WithOrigins("http://localhost:5173")
+    .WithOrigins(frontendUrl)
     .AllowAnyMethod()
     .AllowAnyHeader()
     .AllowCredentials();
