@@ -13,12 +13,13 @@ namespace URL_Shortener.Controllers
     public class UrlController : ControllerBase
     {
         private readonly IUrlShortenerService _urlShortenerService;
-        private readonly IUrlRepository _repository;
+        private readonly IUrlManagementService _urlManagementService;
 
-        public UrlController(IUrlShortenerService urlShortenerService, IUrlRepository repository)
+        public UrlController(IUrlShortenerService urlShortenerService, IUrlManagementService urlManagementService)
         {
             _urlShortenerService = urlShortenerService;
-            _repository = repository;
+            _urlManagementService = urlManagementService;
+
         }
 
         [HttpPost]
@@ -47,26 +48,19 @@ namespace URL_Shortener.Controllers
         [HttpGet("{shortCode}")]
         public async Task<IActionResult> RedirectToOriginal(string shortCode)
         {
-            var urlEntity = await _repository.GetByShortUrlAsync(shortCode);
-            if (urlEntity == null)
+            string? originalUrl = await _urlManagementService.GetOriginalUrlAsync(shortCode);
+            if (originalUrl == null)
             {
                 return NotFound();
             }
 
-            return Redirect(urlEntity.OriginalUrl);
+            return Redirect(originalUrl);
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllUrls()
         {
-            var urls = await _repository.GetAllUrlsAsync();
-            var urlDtos = urls.Select(u => new UrlTableItemDto
-            {
-                Id = u.Id,
-                OriginalUrl = u.OriginalUrl,
-                ShortUrl = u.ShortUrl,
-                CreatorId = u.UserId
-            }).ToList();
+            var urlDtos = await _urlManagementService.GetAllUrlsAsync();
 
             return Ok(urlDtos);
         }
@@ -75,19 +69,11 @@ namespace URL_Shortener.Controllers
         [Authorize]
         public async Task<IActionResult> GetUrlInfo(int id)
         {
-            var urlEntity = await _repository.GetByIdAsync(id);
-            if (urlEntity == null)
+            var detailsDto = await _urlManagementService.GetUrlDetailsAsync(id);
+            if (detailsDto == null)
             {
                 return NotFound();
             }
-
-            var detailsDto = new UrlDetailsDto
-            {
-                OriginalUrl = urlEntity.OriginalUrl,
-                ShortUrl = urlEntity.ShortUrl,
-                CreatedAt = urlEntity.CreatedAt,
-                CreatorName = urlEntity.User?.UserName
-            };
             return Ok(detailsDto);
         }
 
@@ -95,30 +81,21 @@ namespace URL_Shortener.Controllers
         [Authorize]
         public async Task<IActionResult> DeleteUrl(int id)
         {
-            var urlEntity = await _repository.GetByIdAsync(id);
-
-            if (urlEntity == null)
-            {
-                return NotFound();
-            }
-
             try
             {
                 int currentUserId = User.GetUserId();
+                bool isAdmin = User.IsInRole("Admin");
 
-                if (urlEntity.UserId != currentUserId && !User.IsInRole("Admin"))
-                {
-                    return Forbid();
-                }
-
-                _repository.Delete(urlEntity);
-                await _repository.SaveChangesAsync();
-
+                await _urlManagementService.DeleteUrlAsync(id, currentUserId, isAdmin);
                 return NoContent();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
             }
             catch (UnauthorizedAccessException)
             {
-                return Unauthorized();
+                return Forbid();
             }
         }
     }
