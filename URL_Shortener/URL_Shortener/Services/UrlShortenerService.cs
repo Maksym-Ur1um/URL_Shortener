@@ -14,6 +14,8 @@ namespace URL_Shortener.Services
         private readonly IUrlRepository _repository;
         private readonly IUrlBuilderService _urlBuilder;
 
+
+
         public UrlShortenerService(IUrlRepository repository, IUrlBuilderService urlBuilder)
         {
             _repository = repository;
@@ -65,15 +67,20 @@ namespace URL_Shortener.Services
                 return "a";
             }
             const string BASE62 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            StringBuilder codeBuilder = new StringBuilder("");
+            const int MAX_ENCODED_LENGTH = 6;
+            char[] buffer = new char[MAX_ENCODED_LENGTH];
+            int currentIndex = MAX_ENCODED_LENGTH - 1;
             while (id > 0)
             {
                 int tempValue = id % 62;
-                codeBuilder.Append(BASE62[tempValue]);
+                buffer[currentIndex] = BASE62[tempValue];
                 id /= 62;
+                currentIndex--;
             }
-            var codeResult = codeBuilder.ToString().ToCharArray().Reverse().ToArray();
-            return new string(codeResult);
+            int startIndex = currentIndex + 1;
+            int length = MAX_ENCODED_LENGTH - startIndex;
+
+            return new string(buffer, startIndex, length);
         }
     }
 }
