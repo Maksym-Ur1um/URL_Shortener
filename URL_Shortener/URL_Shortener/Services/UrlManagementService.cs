@@ -7,12 +7,10 @@ namespace URL_Shortener.Services
     public class UrlManagementService : IUrlManagementService
     {
         private readonly IUrlRepository _repository;
-        private readonly IUrlBuilderService _urlBuilder;
 
-        public UrlManagementService(IUrlRepository repository, IUrlBuilderService urlBuilder)
+        public UrlManagementService(IUrlRepository repository)
         {
             _repository = repository;
-            _urlBuilder = urlBuilder;
         }
 
         public async Task<string?> GetOriginalUrlAsync(string shortCode)
@@ -29,7 +27,7 @@ namespace URL_Shortener.Services
             {
                 Id = u.Id,
                 OriginalUrl = u.OriginalUrl,
-                ShortUrl = _urlBuilder.BuildFullShortUrl(u.ShortUrl),
+                ShortUrl = u.ShortUrl,
                 CreatorId = u.UserId
             }).ToList();
         }
@@ -42,7 +40,7 @@ namespace URL_Shortener.Services
             return new UrlDetailsDto
             {
                 OriginalUrl = urlEntity.OriginalUrl,
-                ShortUrl = _urlBuilder.BuildFullShortUrl(urlEntity.ShortUrl),
+                ShortUrl = urlEntity.ShortUrl,
                 CreatedAt = urlEntity.CreatedAt,
                 CreatorName = urlEntity.User?.UserName
             };
