@@ -17,7 +17,6 @@ namespace URL_Shortener.Extensions
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IUrlRepository, UrlRepository>();
             services.AddScoped<IUrlShortenerService, UrlShortenerService>();
-            services.AddScoped<IUrlBuilderService, UrlBuilderService>();
             services.AddScoped<IUrlManagementService, UrlManagementService>();
             return services;
         }
