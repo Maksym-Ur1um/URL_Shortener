@@ -4,6 +4,7 @@ using System.Security.Claims;
 using URL_Shortener.Data.Repository;
 using URL_Shortener.DTOs;
 using URL_Shortener.Services.Interfaces;
+using URL_Shortener.Extensions;
 
 namespace URL_Shortener.Controllers
 {
@@ -11,7 +12,7 @@ namespace URL_Shortener.Controllers
     [Route("api/[controller]")]
     public class UrlController : ControllerBase
     {
-        private IUrlShortenerService _urlShortenerService;
+        private readonly IUrlShortenerService _urlShortenerService;
         private readonly IUrlRepository _repository;
 
         public UrlController(IUrlShortenerService urlShortenerService, IUrlRepository repository)
@@ -26,14 +27,14 @@ namespace URL_Shortener.Controllers
         {
             try
             {
-                int userId = int.Parse(User?.FindFirstValue(ClaimTypes.NameIdentifier));
-                UrlResponseDto responseDto = await _urlShortenerService.
-                    ShortenLinkAsync(createUrlDto.OriginalUrl, userId);
-                string shortUrl = $"{Request.Scheme}://{Request.Host}/{responseDto.ShortUrl}";
-                responseDto.ShortUrl = shortUrl;
+                int userId = User.GetUserId();
+
+                UrlResponseDto responseDto = await _urlShortenerService
+                    .ShortenLinkAsync(createUrlDto.OriginalUrl, userId);
+
                 return Ok(responseDto);
             }
-            catch(ArgumentException ex)
+            catch (ArgumentException ex)
             {
                 return BadRequest(ex.Message);
             }
@@ -42,6 +43,7 @@ namespace URL_Shortener.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
         [HttpGet("{shortCode}")]
         public async Task<IActionResult> RedirectToOriginal(string shortCode)
         {
@@ -100,21 +102,24 @@ namespace URL_Shortener.Controllers
                 return NotFound();
             }
 
-            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!int.TryParse(userIdClaim, out int currentUserId))
+            try
+            {
+                int currentUserId = User.GetUserId();
+
+                if (urlEntity.UserId != currentUserId && !User.IsInRole("Admin"))
+                {
+                    return Forbid();
+                }
+
+                _repository.Delete(urlEntity);
+                await _repository.SaveChangesAsync();
+
+                return NoContent();
+            }
+            catch (UnauthorizedAccessException)
             {
                 return Unauthorized();
             }
-            if (urlEntity.UserId != currentUserId && !User.IsInRole("Admin"))
-            {
-                return Forbid();
-            }
-
-            _repository.Delete(urlEntity);
-            await _repository.SaveChangesAsync();
-
-            return NoContent();
         }
-
     }
 }

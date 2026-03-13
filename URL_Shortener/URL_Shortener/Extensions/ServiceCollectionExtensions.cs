@@ -11,9 +11,11 @@ namespace URL_Shortener.Extensions
     {
         public static IServiceCollection AddCoreServices(this IServiceCollection services)
         {
+            services.AddHttpContextAccessor();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IUrlRepository, UrlRepository>();
             services.AddScoped<IUrlShortenerService, UrlShortenerService>();
+            services.AddScoped<IUrlBuilderService, UrlBuilderService>();
             return services;
         }
 

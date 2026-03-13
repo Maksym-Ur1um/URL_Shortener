@@ -12,10 +12,12 @@ namespace URL_Shortener.Services
     public class UrlShortenerService : IUrlShortenerService
     {
         private readonly IUrlRepository _repository;
+        private readonly IUrlBuilderService _urlBuilder;
 
-        public UrlShortenerService(IUrlRepository repository)
+        public UrlShortenerService(IUrlRepository repository, IUrlBuilderService urlBuilder)
         {
             _repository = repository;
+            _urlBuilder = urlBuilder;
         }
 
         public async Task<UrlResponseDto> ShortenLinkAsync(string originalUrl, int userId)
@@ -44,14 +46,13 @@ namespace URL_Shortener.Services
             await _repository.SaveChangesAsync();
 
             string generatedCode = EncodeBase62(urlEntity.Id);
-
             urlEntity.ShortUrl = generatedCode;
             await _repository.SaveChangesAsync();
 
-            var urlResponse = new UrlResponseDto 
-            { 
-                OriginalUrl = urlEntity.OriginalUrl, 
-                ShortUrl = urlEntity.ShortUrl 
+            var urlResponse = new UrlResponseDto
+            {
+                OriginalUrl = urlEntity.OriginalUrl,
+                ShortUrl = _urlBuilder.BuildFullShortUrl(urlEntity.ShortUrl)
             };
             
             return urlResponse;
