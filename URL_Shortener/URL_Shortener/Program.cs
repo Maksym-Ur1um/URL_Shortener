@@ -31,16 +31,6 @@ var app = builder.Build();
 
 await app.SeedDatabaseAsync();
 
-app.UseCors(policy =>
-{
-    var frontendUrl = builder.Configuration.GetValue<string>("FrontendSettings:BaseUrl");
-    policy
-    .WithOrigins(frontendUrl)
-    .AllowAnyMethod()
-    .AllowAnyHeader()
-    .AllowCredentials();
-});
-
 
 if (app.Environment.IsDevelopment())
 {
@@ -49,6 +39,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();

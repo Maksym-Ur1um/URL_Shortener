@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using URL_Shortener.Data;
 using URL_Shortener.Models;
 
@@ -34,12 +33,16 @@ namespace URL_Shortener.Pages
             return Page();
         }
 
+
         public async Task<IActionResult> OnPostAsync()
         {
             if(!User.IsInRole("Admin"))
                 return Forbid();
             if (!ModelState.IsValid)
+            {
+                ViewData["FrontendUrl"] = _configuration.GetValue<string>("FrontendSettings:BaseUrl");
                 return Page();
+            }
 
             var entityFromDb = await _dbContext.PageContents.FindAsync(ABOUT_PAGE_ID);
 
