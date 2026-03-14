@@ -22,7 +22,6 @@ namespace URL_Shortener.Pages
 
         public async Task<IActionResult> OnGetAsync()
         {
-            ViewData["FrontendUrl"] = _configuration.GetValue<string>("FrontendSettings:BaseUrl");
 
             var entityFromDb = await _dbContext.PageContents.FindAsync(ABOUT_PAGE_ID);
             
@@ -40,7 +39,6 @@ namespace URL_Shortener.Pages
                 return Forbid();
             if (!ModelState.IsValid)
             {
-                ViewData["FrontendUrl"] = _configuration.GetValue<string>("FrontendSettings:BaseUrl");
                 return Page();
             }
 

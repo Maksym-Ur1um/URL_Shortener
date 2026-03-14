@@ -1,6 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
 using URL_Shortener.Data.Repository;
 using URL_Shortener.Services;
 using URL_Shortener.Services.Interfaces;
@@ -12,53 +11,44 @@ namespace URL_Shortener.Extensions
         public static IServiceCollection AddCoreServices(this IServiceCollection services)
         {
             services.AddHttpContextAccessor();
-            services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IUrlRepository, UrlRepository>();
             services.AddScoped<IUrlShortenerService, UrlShortenerService>();
             services.AddScoped<IUrlManagementService, UrlManagementService>();
+            
             return services;
         }
 
+
         public static IServiceCollection AddAuthServices(this IServiceCollection services, IConfiguration configuration)
         {
-            var jwtSettings = configuration.GetSection("JwtSettings");
-            var securityKey = jwtSettings.GetValue<string>("SecurityKey");
-
-            if (securityKey.IsNullOrEmpty())
-            {
-                throw new InvalidOperationException ("Secret security key is not found in configuration");
-            }
-
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
                 {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = jwtSettings.GetValue<string>("Issuer"),
-                    ValidAudience = jwtSettings.GetValue<string>("Audience"),
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securityKey))
-                };
-                options.Events = new JwtBearerEvents
-                {
-                    OnMessageReceived = context =>
+                    options.Cookie.Name = "auth_cookie";
+                    options.Cookie.HttpOnly = true;
+                    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                    options.Cookie.SameSite = SameSiteMode.Lax;
+                    
+                    options.ExpireTimeSpan = TimeSpan.FromHours(1);
+                    options.SlidingExpiration = true;
+                    
+                    options.LoginPath = "/login";
+
+                    options.Events.OnRedirectToLogin = context =>
                     {
-                        if (context.Request.Cookies.ContainsKey("jwt"))
-                            context.Token = context.Request.Cookies["jwt"];
+                        if (context.Request.Path.StartsWithSegments("/api"))
+                        {
+                            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                            return Task.CompletedTask;
+                        }
 
+                        context.Response.Redirect(context.RedirectUri);
                         return Task.CompletedTask;
-                    }
-                };
-            });
+                    };
+                });
+
             return services;
         }
     }

@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 using URL_Shortener.DTOs;
 using URL_Shortener.Services.Interfaces;
 
@@ -17,34 +20,23 @@ namespace URL_Shortener.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginRequestDto loginRequestDto)
         {
-            var result = await _authService.LoginAsync(loginRequestDto.UserName, loginRequestDto.Password);
+            var result = await _authService.ValidateUserAsync(loginRequestDto.UserName, loginRequestDto.Password);
 
             if (!result.IsSuccess)
             {
                 return Unauthorized("Wrong Username or Password");
             }
 
-            var cookieOptions = new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None,
-                Expires = DateTime.UtcNow.AddHours(1)
-            };
-            Response.Cookies.Append("jwt", result.Token, cookieOptions);
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme, result.Principal!);
 
             return Ok(result.ResponseDto);
         }
         [HttpPost("logout")]
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
-            Response.Cookies.Delete("jwt", new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None
-            });
-
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            
             return Ok(new { message = "Successfully logged out" });
         }
     }
