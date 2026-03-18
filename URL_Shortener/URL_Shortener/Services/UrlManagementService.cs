@@ -6,22 +6,22 @@ namespace URL_Shortener.Services
 {
     public class UrlManagementService : IUrlManagementService
     {
-        private readonly IUrlRepository _repository;
+        private readonly IUrlRepository _UrlRepository;
 
         public UrlManagementService(IUrlRepository repository)
         {
-            _repository = repository;
+            _UrlRepository = repository;
         }
 
         public async Task<string?> GetOriginalUrlAsync(string shortCode)
         {
-            var urlEntity = await _repository.GetByShortUrlAsync(shortCode);
+            var urlEntity = await _UrlRepository.GetByShortUrlAsync(shortCode);
             return urlEntity?.OriginalUrl;
         }
 
         public async Task<IEnumerable<UrlTableItemDto>> GetAllUrlsAsync()
         {
-            var urls = await _repository.GetAllUrlsAsync();
+            var urls = await _UrlRepository.GetAllUrlsAsync();
 
             return urls.Select(u => new UrlTableItemDto
             {
@@ -34,7 +34,7 @@ namespace URL_Shortener.Services
 
         public async Task<UrlDetailsDto?> GetUrlDetailsAsync(int id)
         {
-            var urlEntity = await _repository.GetByIdAsync(id);
+            var urlEntity = await _UrlRepository.GetByIdAsync(id);
             if (urlEntity == null) return null;
 
             return new UrlDetailsDto
@@ -48,7 +48,7 @@ namespace URL_Shortener.Services
 
         public async Task DeleteUrlAsync(int id, int currentUserId, bool isAdmin)
         {
-            var urlEntity = await _repository.GetByIdAsync(id);
+            var urlEntity = await _UrlRepository.GetByIdAsync(id);
 
             if (urlEntity == null)
             {
@@ -60,8 +60,8 @@ namespace URL_Shortener.Services
                 throw new UnauthorizedAccessException("You don't have permission to delete this URL.");
             }
 
-            _repository.Delete(urlEntity);
-            await _repository.SaveChangesAsync();
+            _UrlRepository.Delete(urlEntity);
+            await _UrlRepository.SaveChangesAsync();
         }
     }
 }

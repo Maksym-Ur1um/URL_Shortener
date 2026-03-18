@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 export default function UrlTablePage() {
   const [urls, setUrls] = useState<IUrlTableItem[]>([]);
   const [newUrl, setNewUrl] = useState("");
-  const [error, setError] = useState("");
+  const [globalError, setGlobalError] = useState("");
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const isAuthenticated = useSelector(
@@ -23,7 +23,7 @@ export default function UrlTablePage() {
         const response = await getAllUrls();
         setUrls(response || []);
       } catch {
-        setError("Server connection Error!");
+        setGlobalError("Server connection Error!");
         setUrls([]);
       }
     }
@@ -32,23 +32,23 @@ export default function UrlTablePage() {
 
   async function handleAddUrl(e: React.FormEvent) {
     e.preventDefault();
-    setError("");
+    setGlobalError("");
     try {
       await createUrl({ originalUrl: newUrl });
       setNewUrl("");
       setRefreshTrigger((prev) => prev + 1);
     } catch {
-      setError("Invalid Url or already exists!");
+      setGlobalError("Invalid Url or already exists!");
     }
   }
 
   async function handleDeleteUrl(id: number) {
-    setError("");
+    setGlobalError("");
     try {
       await deleteUrl(id);
       setRefreshTrigger((prev) => prev + 1);
     } catch {
-      setError("You have no permissions to delete this URL!");
+      setGlobalError("You have no permissions to delete this URL!");
     }
   }
 
@@ -59,9 +59,9 @@ export default function UrlTablePage() {
           <h1 className="fw-bold text-dark">URL Shortener</h1>
         </div>
 
-        {error && (
+        {globalError && (
           <div className="alert alert-danger py-2 small text-center mb-4">
-            {error}
+            {globalError}
           </div>
         )}
 

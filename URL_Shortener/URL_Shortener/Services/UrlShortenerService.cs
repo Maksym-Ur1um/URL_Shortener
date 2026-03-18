@@ -11,13 +11,13 @@ namespace URL_Shortener.Services
 {
     public class UrlShortenerService : IUrlShortenerService
     {
-        private readonly IUrlRepository _repository;
+        private readonly IUrlRepository _UrlRepository;
 
 
 
         public UrlShortenerService(IUrlRepository repository)
         {
-            _repository = repository;
+            _UrlRepository = repository;
         }
 
         public async Task<UrlResponseDto> ShortenLinkAsync(string originalUrl, int userId)
@@ -29,7 +29,7 @@ namespace URL_Shortener.Services
                 throw new ArgumentException("Wrong Link!");
             }
 
-            var existingUrl = await _repository.GetByOriginalUrlAsync(originalUrl);
+            var existingUrl = await _UrlRepository.GetByOriginalUrlAsync(originalUrl);
             if (existingUrl != null)
             {
                 throw new InvalidOperationException("Link is already exists!");
@@ -42,12 +42,12 @@ namespace URL_Shortener.Services
                 ShortUrl = Guid.NewGuid().ToString() 
             };
 
-            _repository.Add(urlEntity);
-            await _repository.SaveChangesAsync();
+            _UrlRepository.Add(urlEntity);
+            await _UrlRepository.SaveChangesAsync();
 
             string generatedCode = EncodeBase62(urlEntity.Id);
             urlEntity.ShortUrl = generatedCode;
-            await _repository.SaveChangesAsync();
+            await _UrlRepository.SaveChangesAsync();
 
             var urlResponse = new UrlResponseDto
             {
