@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 using URL_Shortener.DTOs;
 using URL_Shortener.Services.Interfaces;
 
@@ -12,9 +10,11 @@ namespace URL_Shortener.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
-        public AuthController(IAuthService authService)
+        private readonly IAntiforgery _antiforgery;
+        public AuthController(IAuthService authService, IAntiforgery antiforgery)
         {
             _authService = authService;
+            _antiforgery = antiforgery;
         }
 
         [HttpPost("login")]
@@ -27,17 +27,20 @@ namespace URL_Shortener.Controllers
                 return Unauthorized("Wrong Username or Password");
             }
 
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme, result.Principal!);
-
             return Ok(result.ResponseDto);
         }
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            await _authService.LogoutAsync();
             
             return Ok(new { message = "Successfully logged out" });
+        }
+        [HttpGet("csrf-token")]
+        public IActionResult Csrf_Token()
+        {
+            var tokens = _antiforgery.GetAndStoreTokens(HttpContext);
+            return Ok(new { token = tokens.RequestToken });
         }
     }
 }

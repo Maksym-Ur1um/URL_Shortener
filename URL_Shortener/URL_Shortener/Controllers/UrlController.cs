@@ -10,6 +10,7 @@ namespace URL_Shortener.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [AutoValidateAntiforgeryToken]
     public class UrlController : ControllerBase
     {
         private readonly IUrlShortenerService _urlShortenerService;

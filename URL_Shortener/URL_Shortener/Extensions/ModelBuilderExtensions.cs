@@ -8,10 +8,6 @@ namespace URL_Shortener.Extensions
         public static void Configure(this ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ShortenedUrl>()
-                .HasIndex(u => u.OriginalUrl)
-                .IsUnique();
-
-            modelBuilder.Entity<ShortenedUrl>()
                 .HasIndex(u => u.ShortUrl)
                 .IsUnique();
         }

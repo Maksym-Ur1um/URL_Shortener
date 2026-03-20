@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
-using System.Security.Claims;
-using URL_Shortener.Data.Repository;
+﻿using Microsoft.AspNetCore.Identity;
 using URL_Shortener.DTOs;
 using URL_Shortener.Models;
 using URL_Shortener.Services.Interfaces;
@@ -9,50 +7,44 @@ namespace URL_Shortener.Services
 {
     public class AuthService : IAuthService
     {
-        private readonly IUserRepository _userRepository;
-
-        public AuthService(IUserRepository userRepository)
+        private readonly SignInManager<User> _signInManager;
+        private readonly UserManager<User> _userManager;
+        public AuthService(SignInManager<User> signInManager, UserManager<User> userManager) 
         {
-            _userRepository = userRepository;
+            _signInManager = signInManager;
+            _userManager = userManager;
         }
+           
 
         public async Task<LoginResponseDto> ValidateUserAsync(string userName, string password)
         {
 
-            var user = await _userRepository.GetByUserNameAsync(userName);
-
-            if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
+            var isAuthenticated = await _signInManager.PasswordSignInAsync(userName, password, isPersistent: true, lockoutOnFailure: false);
+            if (isAuthenticated.Succeeded)
             {
-                return new LoginResponseDto { IsSuccess = false };
+                var user = await _userManager.FindByNameAsync(userName);
+
+                var userRole = await _userManager.GetRolesAsync(user);
+                return new LoginResponseDto
+                {
+                    IsSuccess = true,
+                    ResponseDto = new AuthResponseDto
+                    {
+                        UserName = userName,
+                        Role = userRole.FirstOrDefault(),
+                        UserId = user.Id
+                    }
+                };
             }
-
-            var principal = CreatePrincipal(user);
-
             return new LoginResponseDto
             {
-                IsSuccess = true,
-                Principal = principal,
-                ResponseDto = new AuthResponseDto
-                {
-                    UserName = user.UserName,
-                    Role = user.Role.ToString(),
-                    UserId = user.Id
-                }
+                IsSuccess = false,
             };
+
         }
-
-        private ClaimsPrincipal CreatePrincipal(User user)
+        public async Task LogoutAsync()
         {
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.Role, user.Role.ToString())
-            };
-
-            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
-            return new ClaimsPrincipal(identity);
+            await _signInManager.SignOutAsync();
         }
     }
 }
