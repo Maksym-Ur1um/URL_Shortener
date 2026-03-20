@@ -43,7 +43,14 @@ namespace URL_Shortener.Controllers
         public IActionResult Csrf_Token()
         {
             var tokens = _antiforgery.GetAndStoreTokens(HttpContext);
-            return Ok(new { token = tokens.RequestToken });
+
+            Response.Cookies.Append("XSRF-TOKEN", tokens.RequestToken!, new CookieOptions
+            {
+                HttpOnly = false,
+                Secure = true,
+                SameSite = SameSiteMode.Lax
+            });
+            return NoContent();
         }
     }
 }
