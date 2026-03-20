@@ -1,10 +1,5 @@
 ﻿using FluentAssertions;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using URL_Shortener.Data.Repository;
 using URL_Shortener.Models;
 using URL_Shortener.Services;
@@ -34,9 +29,7 @@ namespace URL_ShortenerTests
             _repositoryMock.Setup(r => r.Add(It.IsAny<ShortenedUrl>()))
                 .Callback<ShortenedUrl>(u => u.Id = mockId);
 
-
             var result = await _service.ShortenLinkAsync(url, 1);
-
 
             result.ShortUrl.Should().Be(expectedCode);
         }
@@ -46,9 +39,9 @@ namespace URL_ShortenerTests
         {
             Func<Task> act = async () => await _service.ShortenLinkAsync("", 1);
 
-
             await act.Should().ThrowAsync<ArgumentException>();
         }
+
         [Theory]
         [InlineData("javascript:alert('XSS')")]
         [InlineData("mailto:test@google.com")]
@@ -58,20 +51,18 @@ namespace URL_ShortenerTests
         {
             Func<Task> act = async () => await _service.ShortenLinkAsync(invalidUrl, 1);
 
-
             await act.Should().ThrowAsync<ArgumentException>()
                 .WithMessage("Wrong Link!");
         }
+
         [Fact]
         public async Task ShortenLinkAsync_DuplicateUrl_ThrowsInvalidOperationException()
         {
             var duplicateUrl = "https://test.com/exists";
             _repositoryMock.Setup(r => r.GetByOriginalUrlAsync(duplicateUrl))
-                .ReturnsAsync(new ShortenedUrl { OriginalUrl = duplicateUrl, ShortUrl = "shortUrl"});
-
+                .ReturnsAsync(new ShortenedUrl { OriginalUrl = duplicateUrl, ShortUrl = "shortUrl" });
 
             Func<Task> act = async () => await _service.ShortenLinkAsync(duplicateUrl, 1);
-
 
             await act.Should().ThrowAsync<InvalidOperationException>()
                 .WithMessage("Link is already exists!");

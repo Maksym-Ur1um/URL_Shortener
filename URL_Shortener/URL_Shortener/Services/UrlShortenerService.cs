@@ -1,8 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
-using System.Text;
-using URL_Shortener.Data;
-using URL_Shortener.Data.Repository;
+﻿using URL_Shortener.Data.Repository;
 using URL_Shortener.DTOs;
 using URL_Shortener.Models;
 using URL_Shortener.Services.Interfaces;
@@ -13,8 +9,6 @@ namespace URL_Shortener.Services
     {
         private readonly IUrlRepository _UrlRepository;
 
-
-
         public UrlShortenerService(IUrlRepository repository)
         {
             _UrlRepository = repository;
@@ -22,8 +16,8 @@ namespace URL_Shortener.Services
 
         public async Task<UrlResponseDto> ShortenLinkAsync(string originalUrl, int userId)
         {
-            if (!Uri.TryCreate(originalUrl, UriKind.Absolute, out var uriResult) 
-                || (uriResult.Scheme != Uri.UriSchemeHttp 
+            if (!Uri.TryCreate(originalUrl, UriKind.Absolute, out var uriResult)
+                || (uriResult.Scheme != Uri.UriSchemeHttp
                 && uriResult.Scheme != Uri.UriSchemeHttps))
             {
                 throw new ArgumentException("Wrong Link!");
@@ -36,10 +30,10 @@ namespace URL_Shortener.Services
             }
 
             ShortenedUrl urlEntity = new ShortenedUrl
-            { 
+            {
                 UserId = userId,
-                OriginalUrl = originalUrl, 
-                ShortUrl = Guid.NewGuid().ToString() 
+                OriginalUrl = originalUrl,
+                ShortUrl = Guid.NewGuid().ToString()
             };
 
             _UrlRepository.Add(urlEntity);
@@ -54,7 +48,7 @@ namespace URL_Shortener.Services
                 OriginalUrl = urlEntity.OriginalUrl,
                 ShortUrl = urlEntity.ShortUrl
             };
-            
+
             return urlResponse;
         }
 

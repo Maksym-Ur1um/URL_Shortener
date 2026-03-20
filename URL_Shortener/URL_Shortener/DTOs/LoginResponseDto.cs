@@ -1,6 +1,4 @@
-﻿using System.Security.Claims;
-
-namespace URL_Shortener.DTOs
+﻿namespace URL_Shortener.DTOs
 {
     public class LoginResponseDto
     {

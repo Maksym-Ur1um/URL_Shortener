@@ -9,16 +9,15 @@ namespace URL_Shortener.Services
     {
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
-        public AuthService(SignInManager<User> signInManager, UserManager<User> userManager) 
+
+        public AuthService(SignInManager<User> signInManager, UserManager<User> userManager)
         {
             _signInManager = signInManager;
             _userManager = userManager;
         }
-           
 
         public async Task<LoginResponseDto> ValidateUserAsync(string userName, string password)
         {
-
             var isAuthenticated = await _signInManager.PasswordSignInAsync(userName, password, isPersistent: true, lockoutOnFailure: false);
             if (isAuthenticated.Succeeded)
             {
@@ -40,8 +39,8 @@ namespace URL_Shortener.Services
             {
                 IsSuccess = false,
             };
-
         }
+
         public async Task LogoutAsync()
         {
             await _signInManager.SignOutAsync();

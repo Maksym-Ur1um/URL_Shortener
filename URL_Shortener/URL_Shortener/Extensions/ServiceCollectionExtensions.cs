@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Http;
-using URL_Shortener.Data;
+﻿using URL_Shortener.Data;
 using URL_Shortener.Data.Repository;
 using URL_Shortener.Models;
 using URL_Shortener.Services;
@@ -17,15 +15,12 @@ namespace URL_Shortener.Extensions
             services.AddScoped<IUrlRepository, UrlRepository>();
             services.AddScoped<IUrlShortenerService, UrlShortenerService>();
             services.AddScoped<IUrlManagementService, UrlManagementService>();
-            
 
             return services;
         }
 
-
         public static IServiceCollection AddAuthServices(this IServiceCollection services, IConfiguration configuration)
         {
-            
             services.AddIdentity<User, Role>(options =>
             {
                 options.Password.RequiredLength = 8;

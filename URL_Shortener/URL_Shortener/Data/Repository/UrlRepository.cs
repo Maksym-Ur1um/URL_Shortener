@@ -3,7 +3,6 @@ using URL_Shortener.Models;
 
 namespace URL_Shortener.Data.Repository
 {
-
     public class UrlRepository : IUrlRepository
     {
         private readonly AppDbContext _dbContext;
@@ -12,6 +11,7 @@ namespace URL_Shortener.Data.Repository
         {
             _dbContext = dbContext;
         }
+
         public async Task<ShortenedUrl?> GetByIdAsync(int id)
         {
             return await _dbContext.ShortenedUrls
@@ -40,6 +40,7 @@ namespace URL_Shortener.Data.Repository
         {
             _dbContext.ShortenedUrls.Add(urlEntity);
         }
+
         public void Delete(ShortenedUrl urlEntity)
         {
             _dbContext.ShortenedUrls.Remove(urlEntity);
@@ -50,5 +51,4 @@ namespace URL_Shortener.Data.Repository
             await _dbContext.SaveChangesAsync();
         }
     }
-
 }

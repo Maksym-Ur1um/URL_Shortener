@@ -1,5 +1,4 @@
-﻿
-namespace URL_Shortener.Models
+﻿namespace URL_Shortener.Models
 {
     public class PageContent
     {

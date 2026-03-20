@@ -11,6 +11,7 @@ namespace URL_Shortener.Controllers
     {
         private readonly IAuthService _authService;
         private readonly IAntiforgery _antiforgery;
+
         public AuthController(IAuthService authService, IAntiforgery antiforgery)
         {
             _authService = authService;
@@ -29,13 +30,15 @@ namespace URL_Shortener.Controllers
 
             return Ok(result.ResponseDto);
         }
+
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
             await _authService.LogoutAsync();
-            
+
             return Ok(new { message = "Successfully logged out" });
         }
+
         [HttpGet("csrf-token")]
         public IActionResult Csrf_Token()
         {

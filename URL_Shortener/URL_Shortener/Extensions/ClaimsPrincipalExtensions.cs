@@ -7,7 +7,7 @@ namespace URL_Shortener.Extensions
         public static int GetUserId(this ClaimsPrincipal user)
         {
             var claim = user?.FindFirstValue(ClaimTypes.NameIdentifier);
-            if(int.TryParse(claim, out var userId))
+            if (int.TryParse(claim, out var userId))
             {
                 return userId;
             }

@@ -4,7 +4,8 @@ namespace URL_Shortener.Services.Interfaces
 {
     public interface IAuthService
     {
-        public Task<LoginResponseDto> ValidateUserAsync(string userName, string password);
+        Task<LoginResponseDto> ValidateUserAsync(string userName, string password);
+
         Task LogoutAsync();
     }
 }
