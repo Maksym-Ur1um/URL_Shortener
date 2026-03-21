@@ -1,5 +1,9 @@
 import apiClient from "./apiClient";
-import type { ILoginRequest, IUser } from "../types/auth.types";
+import type { ILoginRequest, IRegisterRequest, IUser } from "../types/auth.types";
+
+export const registerApi = async function(registerData: IRegisterRequest): Promise<void> {
+  await apiClient.post("/Auth/register", registerData)
+}
 
 export const loginApi = async function (
   loginData: ILoginRequest,

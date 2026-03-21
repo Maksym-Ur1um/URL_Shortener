@@ -4,6 +4,12 @@ export interface IUser {
   userId: number;
 }
 
+export interface IRegisterRequest {
+  userName: string;
+  password: string;
+  confirmPassword: string;
+}
+
 export interface ILoginRequest {
   userName: string;
   password: string;

@@ -26,6 +26,7 @@ export default function Header() {
   const location = useLocation();
 
   if (location.pathname === "/login") return null;
+  if (location.pathname === "/register") return null;
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm py-3">
@@ -34,13 +35,6 @@ export default function Header() {
           URL Shortener
         </Link>
         <div className="d-flex ms-auto gap-3">
-          <a
-            href="https://localhost:7076/about"
-            className="btn btn-outline-light fw-bold px-3 rounded-3 shadow-sm d-flex align-items-center"
-          >
-            About
-          </a>
-
           {isLogged ? (
             <button
               className="btn btn-danger fw-bold px-4 rounded-3 shadow-sm"
@@ -49,12 +43,20 @@ export default function Header() {
               Logout
             </button>
           ) : (
-            <Link
-              className="btn btn-light text-primary fw-bold px-4 rounded-3 shadow-sm"
-              to="/login"
-            >
-              Sign In
-            </Link>
+            <>
+              <Link
+                className="btn btn-outline-light fw-bold px-4 rounded-3 shadow-sm"
+                to="/login"
+              >
+                Sign In
+              </Link>
+              <Link
+                className="btn btn-light text-primary fw-bold px-4 rounded-3 shadow-sm"
+                to="/register"
+              >
+                Sign Up
+              </Link>
+            </>
           )}
         </div>
       </div>
