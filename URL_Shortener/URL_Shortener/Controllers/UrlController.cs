@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using URL_Shortener.DTOs;
 using URL_Shortener.Extensions;
 using URL_Shortener.Services.Interfaces;
@@ -22,25 +23,15 @@ namespace URL_Shortener.Controllers
 
         [HttpPost]
         [Authorize]
+        [EnableRateLimiting("UrlCreationLimit")]
         public async Task<IActionResult> CreateShortLink([FromBody] CreateUrlDto createUrlDto)
         {
-            try
-            {
-                int userId = User.GetUserId();
+            int userId = User.GetUserId();
 
-                UrlResponseDto responseDto = await _urlShortenerService
-                    .ShortenLinkAsync(createUrlDto.OriginalUrl, userId);
+            UrlResponseDto responseDto = await _urlShortenerService
+                .ShortenLinkAsync(createUrlDto.OriginalUrl, userId);
 
-                return Ok(responseDto);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(responseDto);
         }
 
         [HttpGet("{shortCode}")]
@@ -79,22 +70,11 @@ namespace URL_Shortener.Controllers
         [Authorize]
         public async Task<IActionResult> DeleteUrl(int id)
         {
-            try
-            {
-                int currentUserId = User.GetUserId();
-                bool isAdmin = User.IsInRole("Admin");
+            int currentUserId = User.GetUserId();
+            bool isAdmin = User.IsInRole("Admin");
 
-                await _urlManagementService.DeleteUrlAsync(id, currentUserId, isAdmin);
-                return NoContent();
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return Forbid();
-            }
+            await _urlManagementService.DeleteUrlAsync(id, currentUserId, isAdmin);
+            return NoContent();
         }
     }
 }

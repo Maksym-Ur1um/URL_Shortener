@@ -1,5 +1,8 @@
-﻿using URL_Shortener.Data;
+﻿using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
+using URL_Shortener.Data;
 using URL_Shortener.Data.Repository;
+using URL_Shortener.Middleware;
 using URL_Shortener.Models;
 using URL_Shortener.Services;
 using URL_Shortener.Services.Interfaces;
@@ -10,6 +13,8 @@ namespace URL_Shortener.Extensions
     {
         public static IServiceCollection AddCoreServices(this IServiceCollection services)
         {
+            services.AddProblemDetails();
+            services.AddExceptionHandler<GlobalExceptionHandler>();
             services.AddHttpContextAccessor();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IUrlRepository, UrlRepository>();
@@ -57,6 +62,23 @@ namespace URL_Shortener.Extensions
             services.AddAntiforgery(options =>
             {
                 options.HeaderName = "X-XSRF-TOKEN";
+            });
+            return services;
+        }
+
+        public static IServiceCollection AddSecurityServices(this IServiceCollection services)
+        {
+            services.AddRateLimiter(options =>
+            {
+                options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+                options.AddFixedWindowLimiter("UrlCreationLimit", limiterOptions =>
+                {
+                    limiterOptions.PermitLimit = 5;
+                    limiterOptions.Window = TimeSpan.FromMinutes(1);
+                    limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+                    limiterOptions.QueueLimit = 0;
+                });
             });
             return services;
         }
