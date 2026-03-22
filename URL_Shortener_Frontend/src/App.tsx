@@ -7,6 +7,7 @@ import Header from "./components/Header"
 import { useEffect } from "react"
 import { initializeCsrfToken } from "./api/auth.api"
 import RegisterPage from "./pages/RegisterPage"
+import AboutPage from "./pages/AboutPage"
 
 function App() {
   useEffect(() => {
@@ -31,6 +32,7 @@ function App() {
           <Route path="/login" element = {<LoginPage />}/>
           <Route path ="/register" element = {<RegisterPage/>}/>
           <Route path="/" element = {<UrlTablePage />}/>
+          <Route path="/about" element = {<AboutPage />} />
           <Route path="/url/info/:id" element = {
             <ProtectedRoute>
               <UrlInfoPage />

@@ -25,9 +25,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
 app.UseHttpsRedirection();
-
+app.UseStaticFiles();
 app.UseRouting();
 
 app.UseRateLimiter();
@@ -39,5 +38,7 @@ app.UseAntiforgery();
 
 app.MapControllers();
 app.MapRazorPages();
+
+app.MapFallbackToFile("index.html");
 
 await app.RunAsync();

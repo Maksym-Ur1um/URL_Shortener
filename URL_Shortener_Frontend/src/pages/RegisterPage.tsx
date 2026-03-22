@@ -51,7 +51,6 @@ export default function RegisterPage() {
         <div className="card-body p-5">
           <h2 className="fw-bold text-center mb-4">Sign Up</h2>
 
-          {/* Блок серверных ошибок от Identity */}
           {serverErrors.length > 0 && (
             <div className="alert alert-danger py-2 small mb-4">
               <ul className="mb-0 ps-3">
@@ -125,7 +124,6 @@ export default function RegisterPage() {
             </button>
           </form>
 
-          {/* Ссылка на страницу входа */}
           <div className="text-center mt-4 small">
             <span className="text-secondary fw-semibold">
               Already have an account?{" "}

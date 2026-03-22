@@ -59,7 +59,7 @@ export default function UrlInfoPage() {
                 </label>
                 <div>
                   <a
-                    href={`https://localhost:7076/api/url/${urlInfo.shortUrl}`}
+                    href={`${window.location.origin}/api/url/${urlInfo.shortUrl}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="fw-bold"

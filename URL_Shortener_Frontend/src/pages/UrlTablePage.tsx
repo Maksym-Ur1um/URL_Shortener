@@ -108,7 +108,7 @@ export default function UrlTablePage() {
                       </div>
                       <div className="fw-bold fs-5">
                         <a
-                          href={`https://localhost:7076/api/url/${url.shortUrl}`}
+                          href={`${window.location.origin}/api/url/${url.shortUrl}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-primary text-decoration-none"
